@@ -54,18 +54,32 @@ uvicorn myparcel.main:app --reload
 
 ## Supported Carriers
 
-| Carrier | Status | Requires Browser | Notes |
-|---------|--------|------------------|-------|
-| Royal Mail | ✅ Working | No | UK tracked items |
-| DPD | ✅ Working | No | DPD UK |
-| Evri | ✅ Working | **Yes** | Formerly Hermes, JS-heavy site |
+| Carrier | Status | Requirements | Notes |
+|---------|--------|--------------|-------|
+| Royal Mail | ✅ Working | API credentials | [Get API keys](https://developer.royalmail.net/) |
+| DPD | ✅ Working | None | DPD UK |
+| Evri | ✅ Working | Playwright | Formerly Hermes, JS-heavy site |
 | Amazon Logistics | ⚠️ Limited | - | Requires login for full tracking |
 
-### Browser Automation Note
+### Royal Mail API Setup
+
+Royal Mail requires API credentials from their developer portal:
+
+1. Register at [developer.royalmail.net](https://developer.royalmail.net/)
+2. Create an application to get your Client ID and Secret
+3. Subscribe to the [Tracking API v2](https://developer.royalmail.net/product/175625/api/76888)
+4. Add credentials to your `.env` file:
+
+```bash
+ROYAL_MAIL_CLIENT_ID=your-client-id
+ROYAL_MAIL_CLIENT_SECRET=your-client-secret
+```
+
+### Browser Automation (Evri)
 
 Some carriers (like Evri) have JavaScript-heavy tracking pages that require browser automation via [Playwright](https://playwright.dev/).
 
-- **Lightweight Docker image**: Works with Royal Mail, DPD
+- **Lightweight Docker image**: Works with DPD (and Royal Mail with API keys)
 - **Full Docker image**: Includes Chromium for Evri and similar carriers
 
 The full image is larger (~1GB vs ~200MB) but supports all carriers.

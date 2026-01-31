@@ -1,5 +1,15 @@
 # Royal Mail Carrier Configuration
 # https://www.royalmail.com/track-your-item
+#
+# REQUIRES API CREDENTIALS from Royal Mail Developer Portal:
+#   https://developer.royalmail.net/
+#
+# Set these environment variables:
+#   ROYAL_MAIL_CLIENT_ID=your-client-id
+#   ROYAL_MAIL_CLIENT_SECRET=your-client-secret
+#
+# API Documentation:
+#   https://developer.royalmail.net/product/175625/api/76888
 
 id: royal-mail
 name: Royal Mail
