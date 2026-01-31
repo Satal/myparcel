@@ -1,0 +1,1 @@
+"""Royal Mail carrier adapter."""

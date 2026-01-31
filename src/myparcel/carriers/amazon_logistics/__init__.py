@@ -1,0 +1,1 @@
+"""Amazon Logistics carrier adapter."""

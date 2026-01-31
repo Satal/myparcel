@@ -1,0 +1,72 @@
+# Royal Mail Carrier Configuration
+# https://www.royalmail.com/track-your-item
+
+id: royal-mail
+name: Royal Mail
+website: https://www.royalmail.com
+tracking_url_template: "https://www.royalmail.com/track-your-item#/tracking-results/{tracking_number}"
+enabled: true
+
+# Tracking number patterns
+# Royal Mail uses several different formats
+tracking_patterns:
+  # International tracked items (e.g., RR123456789GB)
+  - regex: "^[A-Z]{2}[0-9]{9}GB$"
+    description: "International tracked (e.g., RR123456789GB)"
+
+  # Tracked 24/48 - 13 characters starting with letters
+  - regex: "^[A-Z]{2}[0-9]{9}[A-Z]{2}$"
+    description: "Standard tracked format"
+
+  # Numeric tracking numbers (16-20 digits)
+  - regex: "^[0-9]{16,20}$"
+    description: "Numeric tracking (Tracked 24/48)"
+
+  # Special Delivery / Signed For (2D barcode format)
+  - regex: "^[A-Z]{2}[0-9]{6,9}[0-9]GB$"
+    description: "Special Delivery / Signed For"
+
+# Map carrier status text to normalised status
+# Keys are substrings to match (case-insensitive)
+status_mapping:
+  "delivered": "delivered"
+  "we've delivered": "delivered"
+  "item has been delivered": "delivered"
+  "signed for by": "delivered"
+
+  "out for delivery": "out_for_delivery"
+  "with your local delivery office": "out_for_delivery"
+  "item is on its way": "out_for_delivery"
+
+  "in transit": "in_transit"
+  "on its way": "in_transit"
+  "at a royal mail": "in_transit"
+  "processed": "in_transit"
+  "left": "in_transit"
+  "arrived": "in_transit"
+
+  "item received": "received"
+  "collected": "received"
+  "accepted": "received"
+  "posted": "received"
+
+  "delivery attempted": "failed_attempt"
+  "unable to deliver": "failed_attempt"
+  "no answer": "failed_attempt"
+  "addressee not available": "failed_attempt"
+  "sorry we missed you": "failed_attempt"
+
+  "held": "held"
+  "customs": "held"
+  "awaiting": "held"
+
+  "returned": "returned"
+  "return to sender": "returned"
+
+# Email parsing patterns (for dispatch notification emails)
+email_patterns:
+  subject_contains:
+    - "Royal Mail"
+    - "Track your item"
+    - "Your item has been dispatched"
+  tracking_regex: "[A-Z]{2}[0-9]{9}GB|[0-9]{16,20}"

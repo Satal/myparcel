@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{{ parcel.tracking_number }} - MyParcel{% endblock %}
+
+{% block content %}
+<div class="parcel-detail">
+    <div class="detail-header">
+        <a href="/" class="back-link">&larr; Back to Dashboard</a>
+        <div class="detail-actions">
+            {% if tracking_url %}
+            <a href="{{ tracking_url }}" target="_blank" class="btn btn-secondary">
+                View on {{ parcel.carrier.name }}
+            </a>
+            {% endif %}
+            <form action="/parcel/{{ parcel.id }}/refresh" method="post" class="inline-form">
+                <button type="submit" class="btn btn-primary">Refresh Status</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="detail-main">
+        <section class="parcel-info">
+            <h1>
+                {% if parcel.description %}
+                    {{ parcel.description }}
+                {% else %}
+                    Parcel {{ parcel.tracking_number }}
+                {% endif %}
+            </h1>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Tracking Number</label>
+                    <span class="mono">{{ parcel.tracking_number }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Carrier</label>
+                    <span>{{ parcel.carrier.name }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Status</label>
+                    <span class="status-badge status-{{ parcel.status.value }}">
+                        {{ parcel.status.value | replace('_', ' ') | title }}
+                    </span>
+                </div>
+                {% if parcel.sender %}
+                <div class="info-item">
+                    <label>Sender</label>
+                    <span>{{ parcel.sender }}</span>
+                </div>
+                {% endif %}
+                {% if parcel.expected_delivery %}
+                <div class="info-item">
+                    <label>Expected Delivery</label>
+                    <span>{{ parcel.expected_delivery.strftime('%d %B %Y') }}</span>
+                </div>
+                {% endif %}
+                {% if parcel.last_checked %}
+                <div class="info-item">
+                    <label>Last Checked</label>
+                    <span>{{ parcel.last_checked.strftime('%d %b %Y %H:%M') }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if parcel.last_status_text %}
+            <div class="current-status">
+                <h3>Current Status</h3>
+                <p>{{ parcel.last_status_text }}</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="tracking-timeline">
+            <h2>Tracking History</h2>
+            {% if parcel.events %}
+            <ol class="timeline">
+                {% for event in parcel.events %}
+                <li class="timeline-item status-{{ event.status.value }}">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <time>{{ event.timestamp.strftime('%d %b %Y %H:%M') }}</time>
+                        <p>{{ event.status_text }}</p>
+                        {% if event.location %}
+                        <small>{{ event.location }}</small>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <p class="no-events">No tracking events yet. Try refreshing the status.</p>
+            {% endif %}
+        </section>
+    </div>
+
+    <div class="detail-footer">
+        <form action="/parcel/{{ parcel.id }}/delete" method="post" class="delete-form"
+              onsubmit="return confirm('Are you sure you want to delete this parcel?');">
+            <button type="submit" class="btn btn-danger">Delete Parcel</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

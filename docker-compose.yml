@@ -1,0 +1,27 @@
+services:
+  myparcel:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./src/myparcel/carriers:/app/src/myparcel/carriers:ro
+    environment:
+      - DEBUG=false
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+    restart: unless-stopped
+
+  # Optional: For development with auto-reload
+  myparcel-dev:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./static:/app/static
+      - ./data:/app/data
+    environment:
+      - DEBUG=true
+    command: uvicorn myparcel.main:app --host 0.0.0.0 --port 8000 --reload
+    profiles:
+      - dev

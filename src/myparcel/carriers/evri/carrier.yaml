@@ -1,0 +1,61 @@
+# Evri (formerly Hermes) Carrier Configuration
+# https://www.evri.com/track-a-parcel
+
+id: evri
+name: Evri
+website: https://www.evri.com
+tracking_url_template: "https://www.evri.com/track-a-parcel/{tracking_number}"
+enabled: true
+
+# Tracking number patterns
+tracking_patterns:
+  # Standard Evri tracking (16 characters, alphanumeric)
+  - regex: "^[A-Z0-9]{16}$"
+    description: "Standard Evri tracking number"
+
+  # Evri with H prefix
+  - regex: "^H[0-9]{15}$"
+    description: "Evri H-prefix tracking"
+
+  # Legacy Hermes format
+  - regex: "^[0-9]{16}$"
+    description: "Legacy Hermes numeric format"
+
+# Status mapping
+status_mapping:
+  "delivered": "delivered"
+  "parcel delivered": "delivered"
+  "left in safe place": "delivered"
+  "handed to resident": "delivered"
+
+  "out for delivery": "out_for_delivery"
+  "with courier": "out_for_delivery"
+  "on its way": "out_for_delivery"
+
+  "in transit": "in_transit"
+  "at hub": "in_transit"
+  "at depot": "in_transit"
+  "scanned": "in_transit"
+
+  "collected": "received"
+  "received": "received"
+  "picked up": "received"
+
+  "delivery attempted": "failed_attempt"
+  "could not deliver": "failed_attempt"
+  "no access": "failed_attempt"
+
+  "at parcelshop": "held"
+  "available for collection": "held"
+
+  "returning": "returned"
+  "returned": "returned"
+
+# Email patterns
+email_patterns:
+  subject_contains:
+    - "Evri"
+    - "Hermes"
+    - "Your parcel"
+    - "Delivery update"
+  tracking_regex: "[A-Z0-9]{16}|H[0-9]{15}"

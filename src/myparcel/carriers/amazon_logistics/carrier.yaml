@@ -1,0 +1,55 @@
+# Amazon Logistics Carrier Configuration
+# Note: Amazon tracking typically requires login, so this adapter is limited
+
+id: amazon-logistics
+name: Amazon Logistics
+website: https://www.amazon.co.uk
+tracking_url_template: "https://www.amazon.co.uk/gp/your-account/ship-track?trackingId={tracking_number}"
+enabled: true
+
+# Tracking number patterns
+tracking_patterns:
+  # Amazon tracking ID (TBA format)
+  - regex: "^TBA[0-9]{12,15}$"
+    description: "Amazon TBA tracking number"
+
+  # Alternative Amazon format
+  - regex: "^[0-9]{12,20}$"
+    description: "Amazon numeric tracking"
+
+# Status mapping
+status_mapping:
+  "delivered": "delivered"
+  "package was delivered": "delivered"
+  "handed to resident": "delivered"
+
+  "out for delivery": "out_for_delivery"
+  "on the way": "out_for_delivery"
+  "arriving today": "out_for_delivery"
+
+  "in transit": "in_transit"
+  "shipped": "in_transit"
+  "package has shipped": "in_transit"
+
+  "order received": "received"
+  "preparing for shipment": "pending"
+
+  "delivery attempted": "failed_attempt"
+  "delivery unsuccessful": "failed_attempt"
+
+  "available for pickup": "held"
+  "at locker": "held"
+
+  "returning": "returned"
+
+# Email patterns
+email_patterns:
+  subject_contains:
+    - "Amazon"
+    - "Your Amazon order"
+    - "Delivered"
+    - "Out for delivery"
+  tracking_regex: "TBA[0-9]{12,15}"
+
+# Note: Amazon tracking typically requires authentication
+# This adapter may have limited functionality

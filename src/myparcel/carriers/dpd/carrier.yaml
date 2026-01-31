@@ -1,0 +1,60 @@
+# DPD UK Carrier Configuration
+# https://www.dpd.co.uk/service/track-parcel
+
+id: dpd
+name: DPD
+website: https://www.dpd.co.uk
+tracking_url_template: "https://www.dpd.co.uk/tracking/trackingSearch.do?parcelCode={tracking_number}"
+enabled: true
+
+# Tracking number patterns
+tracking_patterns:
+  # Standard DPD tracking (15 digits)
+  - regex: "^[0-9]{15}$"
+    description: "Standard DPD tracking number (15 digits)"
+
+  # DPD with prefix
+  - regex: "^[0-9]{14,16}$"
+    description: "DPD tracking number (14-16 digits)"
+
+  # DPD reference format
+  - regex: "^[A-Z0-9]{10,20}$"
+    description: "DPD alphanumeric reference"
+
+# Status mapping
+status_mapping:
+  "delivered": "delivered"
+  "parcel delivered": "delivered"
+  "signed for": "delivered"
+
+  "out for delivery": "out_for_delivery"
+  "with driver": "out_for_delivery"
+  "on vehicle": "out_for_delivery"
+
+  "in transit": "in_transit"
+  "at dpd depot": "in_transit"
+  "hub scan": "in_transit"
+  "processed": "in_transit"
+
+  "collected": "received"
+  "picked up": "received"
+  "received": "received"
+
+  "delivery attempted": "failed_attempt"
+  "carded": "failed_attempt"
+  "no one available": "failed_attempt"
+
+  "held": "held"
+  "at pickup shop": "held"
+  "collection point": "held"
+
+  "returned": "returned"
+  "return to sender": "returned"
+
+# Email patterns
+email_patterns:
+  subject_contains:
+    - "DPD"
+    - "Your parcel"
+    - "Delivery update"
+  tracking_regex: "[0-9]{14,16}"
