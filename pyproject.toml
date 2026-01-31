@@ -22,6 +22,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Browser automation for carriers with JS-heavy tracking pages (Evri, etc.)
+browser = [
+    "playwright>=1.40.0",
+]
 dev = [
     "pytest>=7.4.0",
     "pytest-asyncio>=0.23.0",
@@ -29,6 +33,10 @@ dev = [
     "ruff>=0.1.0",
     "mypy>=1.8.0",
     "httpx>=0.26.0",
+    "playwright>=1.40.0",
+]
+all = [
+    "playwright>=1.40.0",
 ]
 
 [build-system]

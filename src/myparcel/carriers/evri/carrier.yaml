@@ -1,14 +1,22 @@
 # Evri (formerly Hermes) Carrier Configuration
-# https://www.evri.com/track-a-parcel
+# https://www.evri.com/track/parcel/{tracking_number}
+#
+# Note: Evri's tracking page is a JavaScript SPA. The tracker requires
+# Playwright for browser automation. Install with:
+#   pip install playwright && playwright install chromium
 
 id: evri
 name: Evri
 website: https://www.evri.com
-tracking_url_template: "https://www.evri.com/track-a-parcel/{tracking_number}"
+tracking_url_template: "https://www.evri.com/track/parcel/{tracking_number}"
 enabled: true
 
 # Tracking number patterns
 tracking_patterns:
+  # T01 prefix format (e.g., T01E8A0107598203)
+  - regex: "^T01[A-Z0-9]{13}$"
+    description: "Evri T01-prefix tracking number"
+
   # Standard Evri tracking (16 characters, alphanumeric)
   - regex: "^[A-Z0-9]{16}$"
     description: "Standard Evri tracking number"
@@ -30,11 +38,12 @@ status_mapping:
 
   "out for delivery": "out_for_delivery"
   "with courier": "out_for_delivery"
-  "on its way": "out_for_delivery"
 
+  "on its way": "in_transit"
   "in transit": "in_transit"
   "at hub": "in_transit"
   "at depot": "in_transit"
+  "at the delivery depot": "in_transit"
   "scanned": "in_transit"
 
   "collected": "received"
@@ -58,4 +67,4 @@ email_patterns:
     - "Hermes"
     - "Your parcel"
     - "Delivery update"
-  tracking_regex: "[A-Z0-9]{16}|H[0-9]{15}"
+  tracking_regex: "T01[A-Z0-9]{13}|[A-Z0-9]{16}|H[0-9]{15}"
