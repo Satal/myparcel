@@ -21,8 +21,11 @@ Track all your parcels from Royal Mail, DPD, Evri, and more in one place.
 git clone https://github.com/satal/myparcel.git
 cd myparcel
 
-# Start the application
+# Option 1: Lightweight (Royal Mail, DPD - no browser automation)
 docker compose up -d
+
+# Option 2: Full version with browser support (ALL carriers including Evri)
+docker compose --profile full up -d myparcel-full
 
 # Access at http://localhost:8000
 ```
@@ -38,8 +41,12 @@ cd myparcel
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install dependencies
-pip install -e ".[dev]"
+# Install dependencies (lightweight)
+pip install -e .
+
+# Or install with browser automation support (for Evri, etc.)
+pip install -e ".[browser]"
+playwright install chromium
 
 # Run the development server
 uvicorn myparcel.main:app --reload
@@ -47,12 +54,21 @@ uvicorn myparcel.main:app --reload
 
 ## Supported Carriers
 
-| Carrier | Status | Notes |
-|---------|--------|-------|
-| Royal Mail | ✅ Working | UK tracked items |
-| DPD | ✅ Working | DPD UK |
-| Evri | ✅ Working | Formerly Hermes |
-| Amazon Logistics | ⚠️ Limited | Requires login for full tracking |
+| Carrier | Status | Requires Browser | Notes |
+|---------|--------|------------------|-------|
+| Royal Mail | ✅ Working | No | UK tracked items |
+| DPD | ✅ Working | No | DPD UK |
+| Evri | ✅ Working | **Yes** | Formerly Hermes, JS-heavy site |
+| Amazon Logistics | ⚠️ Limited | - | Requires login for full tracking |
+
+### Browser Automation Note
+
+Some carriers (like Evri) have JavaScript-heavy tracking pages that require browser automation via [Playwright](https://playwright.dev/).
+
+- **Lightweight Docker image**: Works with Royal Mail, DPD
+- **Full Docker image**: Includes Chromium for Evri and similar carriers
+
+The full image is larger (~1GB vs ~200MB) but supports all carriers.
 
 ## Configuration
 

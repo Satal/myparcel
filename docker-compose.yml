@@ -1,6 +1,9 @@
 services:
+  # Lightweight version - works with Royal Mail, DPD (HTTP-based tracking)
   myparcel:
-    build: .
+    build:
+      context: .
+      target: default
     ports:
       - "8000:8000"
     volumes:
@@ -11,9 +14,33 @@ services:
       - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
     restart: unless-stopped
 
-  # Optional: For development with auto-reload
+  # Full version with Playwright - works with ALL carriers including Evri
+  myparcel-full:
+    build:
+      context: .
+      target: full
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./src/myparcel/carriers:/app/src/myparcel/carriers:ro
+    environment:
+      - DEBUG=false
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+    # Required for Chromium to work properly in Docker
+    ipc: host
+    # Alternative: use cap_add instead of ipc: host
+    # cap_add:
+    #   - SYS_ADMIN
+    restart: unless-stopped
+    profiles:
+      - full
+
+  # Development with auto-reload (lightweight)
   myparcel-dev:
-    build: .
+    build:
+      context: .
+      target: default
     ports:
       - "8000:8000"
     volumes:

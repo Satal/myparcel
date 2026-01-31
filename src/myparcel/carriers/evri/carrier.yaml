@@ -12,22 +12,19 @@ tracking_url_template: "https://www.evri.com/track/parcel/{tracking_number}"
 enabled: true
 
 # Tracking number patterns
+# Source: https://www.ship24.com/couriers/evri-tracking/evri-tracking-number
 tracking_patterns:
-  # T01 prefix format (e.g., T01E8A0107598203)
-  - regex: "^T01[A-Z0-9]{13}$"
-    description: "Evri T01-prefix tracking number"
+  # Alphanumeric format: Letter + 2 digits + 13 alphanumeric (e.g., T00D7A9104600744)
+  - regex: "^[A-Z][0-9]{2}[A-Z0-9]{13}$"
+    description: "Evri alphanumeric format (letter + 2 digits + 13 chars)"
 
-  # Standard Evri tracking (16 characters, alphanumeric)
-  - regex: "^[A-Z0-9]{16}$"
-    description: "Standard Evri tracking number"
-
-  # Evri with H prefix
-  - regex: "^H[0-9]{15}$"
-    description: "Evri H-prefix tracking"
-
-  # Legacy Hermes format
+  # All-digit format: 16 digits (e.g., 1002345678912345)
   - regex: "^[0-9]{16}$"
-    description: "Legacy Hermes numeric format"
+    description: "Evri 16-digit numeric format"
+
+  # 8-digit calling card number (left by courier if you weren't home)
+  - regex: "^[0-9]{8}$"
+    description: "Evri calling card number (8 digits)"
 
 # Status mapping
 status_mapping:
@@ -67,4 +64,5 @@ email_patterns:
     - "Hermes"
     - "Your parcel"
     - "Delivery update"
-  tracking_regex: "T01[A-Z0-9]{13}|[A-Z0-9]{16}|H[0-9]{15}"
+  # Matches: alphanumeric (T00...) or 16 digits or 8-digit calling card
+  tracking_regex: "[A-Z][0-9]{2}[A-Z0-9]{13}|[0-9]{16}|[0-9]{8}"
