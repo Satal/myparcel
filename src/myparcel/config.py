@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     carriers_dir: Path = Path(__file__).parent / "carriers"
     data_dir: Path = base_dir / "data"
 
+    # Carriers
+    relay_postcode: str | None = None  # Relay home-delivery orders 404 without it
+
     # Tracking
     refresh_interval_minutes: int = 30
     max_tracking_age_days: int = 30

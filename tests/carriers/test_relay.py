@@ -96,3 +96,26 @@ def test_status_mapping(relay, code, expected):
 )
 def test_event_text_mapping(relay, text, expected):
     assert relay.normalise_status(text) == expected
+
+
+class _Response:
+    status_code = 200
+
+    def json(self):
+        return SHIPMENT
+
+
+async def test_fetch_sends_configured_postcode(relay, monkeypatch):
+    seen = {}
+
+    async def fake_get(url, params=None):
+        seen["params"] = params
+        return _Response()
+
+    monkeypatch.setattr("myparcel.carriers.relay.tracker.settings.relay_postcode", "AB1 2CD")
+    monkeypatch.setattr(relay.client, "get", fake_get)
+
+    result = await relay.fetch_status("RELABCDEFGH1")
+
+    assert result.success
+    assert seen["params"] == {"postcode": "AB1 2CD"}
