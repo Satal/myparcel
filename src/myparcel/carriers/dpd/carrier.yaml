@@ -9,20 +9,24 @@ enabled: true
 
 # Tracking number patterns
 tracking_patterns:
-  # Standard DPD tracking (15 digits)
-  - regex: "^[0-9]{15}$"
-    description: "Standard DPD tracking number (15 digits)"
+  # Parcel code as used in track.dpd.co.uk links
+  - regex: "^[0-9]{14}\\*[0-9]{5}$"
+    description: "DPD parcel code (e.g. 15502055803975*21472)"
 
-  # DPD with prefix
-  - regex: "^[0-9]{14,16}$"
-    description: "DPD tracking number (14-16 digits)"
+  # Parcel number (14 digits, sometimes shown with a 15th check digit)
+  - regex: "^[0-9]{14,15}$"
+    description: "DPD parcel number"
 
-  # DPD reference format
-  - regex: "^[A-Z0-9]{10,20}$"
-    description: "DPD alphanumeric reference"
+  # Consignment number
+  - regex: "^[0-9]{10}$"
+    description: "DPD consignment number (10 digits)"
 
 # Status mapping
 status_mapping:
+  # DPD's first event says "received your order details", which must not read as received
+  "order details": "pending"
+  "expecting your parcel": "pending"
+
   "delivered": "delivered"
   "parcel delivered": "delivered"
   "signed for": "delivered"
@@ -35,10 +39,13 @@ status_mapping:
   "at dpd depot": "in_transit"
   "hub scan": "in_transit"
   "processed": "in_transit"
+  "on its way": "in_transit"
+  "on route": "in_transit"
 
   "collected": "received"
   "picked up": "received"
   "received": "received"
+  "we have your parcel": "received"
 
   "delivery attempted": "failed_attempt"
   "carded": "failed_attempt"
