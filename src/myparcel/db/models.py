@@ -57,6 +57,7 @@ class Parcel(Base):
     # User-provided info
     description: Mapped[str | None] = mapped_column(String(255), nullable=True)
     sender: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    postcode: Mapped[str | None] = mapped_column(String(16), nullable=True)
 
     # Current status
     status: Mapped[ParcelStatus] = mapped_column(default=ParcelStatus.UNKNOWN)
@@ -80,7 +81,10 @@ class Parcel(Base):
     # Relationships (eager-loaded: templates read them after the async session has returned)
     carrier: Mapped["Carrier"] = relationship(back_populates="parcels", lazy="selectin")
     events: Mapped[list["TrackingEvent"]] = relationship(
-        back_populates="parcel", order_by="desc(TrackingEvent.timestamp)", lazy="selectin"
+        back_populates="parcel",
+        order_by="desc(TrackingEvent.timestamp)",
+        lazy="selectin",
+        cascade="all, delete-orphan",
     )
 
 

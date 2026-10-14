@@ -49,7 +49,9 @@ class RoyalMailCarrier(BaseCarrier):
         """Check if API credentials are configured."""
         return bool(self.client_id and self.client_secret)
 
-    async def fetch_status(self, tracking_number: str) -> TrackingResult:
+    async def fetch_status(
+        self, tracking_number: str, postcode: str | None = None
+    ) -> TrackingResult:
         """Fetch tracking status from Royal Mail API."""
         tracking_number = tracking_number.strip().upper()
 

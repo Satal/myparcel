@@ -2,6 +2,7 @@
 
 from collections.abc import AsyncGenerator
 
+from sqlalchemy import inspect, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from myparcel.config import settings
@@ -23,6 +24,14 @@ async def init_db() -> None:
     """Initialize the database, creating all tables."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(_add_missing_columns)
+
+
+def _add_missing_columns(conn) -> None:
+    """Add columns introduced after a database was created (create_all skips existing tables)."""
+    columns = {column["name"] for column in inspect(conn).get_columns("parcels")}
+    if "postcode" not in columns:
+        conn.execute(text("ALTER TABLE parcels ADD COLUMN postcode VARCHAR(16)"))
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

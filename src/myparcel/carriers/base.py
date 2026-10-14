@@ -133,13 +133,16 @@ class BaseCarrier(ABC):
         return ParcelStatus.UNKNOWN
 
     @abstractmethod
-    async def fetch_status(self, tracking_number: str) -> TrackingResult:
+    async def fetch_status(
+        self, tracking_number: str, postcode: str | None = None
+    ) -> TrackingResult:
         """Fetch the current status of a parcel.
 
         This method must be implemented by each carrier adapter.
 
         Args:
             tracking_number: The tracking number to look up.
+            postcode: Delivery postcode, for carriers that need it to show full details.
 
         Returns:
             TrackingResult with the current status and any events.

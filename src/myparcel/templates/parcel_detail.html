@@ -49,6 +49,12 @@
                     <span>{{ parcel.sender }}</span>
                 </div>
                 {% endif %}
+                {% if parcel.postcode %}
+                <div class="info-item">
+                    <label>Postcode</label>
+                    <span>{{ parcel.postcode }}</span>
+                </div>
+                {% endif %}
                 {% if parcel.expected_delivery %}
                 <div class="info-item">
                     <label>Expected Delivery</label>

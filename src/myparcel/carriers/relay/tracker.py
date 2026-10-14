@@ -7,7 +7,6 @@ from typing import Any
 import httpx
 
 from myparcel.carriers.base import BaseCarrier, CarrierConfig, TrackingResult
-from myparcel.config import settings
 
 API_URL = "https://relay-production.relaytechapis.co/v0/customer-portal/shipments/{tracking_number}"
 
@@ -17,7 +16,7 @@ class RelayCarrier(BaseCarrier):
 
     Uses the JSON API behind track.relaytech.co. Collect-from-shop orders are served
     without a postcode; home-delivery orders 404 unless the delivery postcode is sent,
-    so set RELAY_POSTCODE.
+    so the parcel's postcode is always sent when known.
     """
 
     def __init__(self, config: CarrierConfig):
@@ -28,20 +27,22 @@ class RelayCarrier(BaseCarrier):
             timeout=30.0,
         )
 
-    async def fetch_status(self, tracking_number: str) -> TrackingResult:
+    async def fetch_status(
+        self, tracking_number: str, postcode: str | None = None
+    ) -> TrackingResult:
         """Fetch tracking status from Relay."""
         tracking_number = tracking_number.strip().upper()
 
         try:
             response = await self.client.get(
                 API_URL.format(tracking_number=tracking_number),
-                params={"postcode": settings.relay_postcode} if settings.relay_postcode else None,
+                params={"postcode": postcode} if postcode else None,
             )
         except httpx.HTTPError as e:
             return TrackingResult(success=False, error=f"HTTP error: {e}")
 
         if response.status_code == 404:
-            hint = "" if settings.relay_postcode else " (home deliveries need RELAY_POSTCODE set)"
+            hint = "" if postcode else " (home deliveries need a postcode)"
             return TrackingResult(success=False, error=f"No order found{hint}")
         if response.status_code != 200:
             return TrackingResult(success=False, error=f"Relay API returned {response.status_code}")

@@ -64,6 +64,7 @@ async def add_parcel(
     carrier_id: str = Form(default=""),
     description: str = Form(default=""),
     sender: str = Form(default=""),
+    postcode: str = Form(default=""),
     db: AsyncSession = Depends(get_db),
 ):
     """Add a new parcel to track."""
@@ -85,6 +86,7 @@ async def add_parcel(
         carrier_id=carrier_id,
         description=description or None,
         sender=sender or None,
+        postcode=postcode or None,
     )
 
     if not parcel:

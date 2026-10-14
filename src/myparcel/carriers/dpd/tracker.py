@@ -28,7 +28,9 @@ class DPDCarrier(BaseCarrier):
             timeout=30.0,
         )
 
-    async def fetch_status(self, tracking_number: str) -> TrackingResult:
+    async def fetch_status(
+        self, tracking_number: str, postcode: str | None = None
+    ) -> TrackingResult:
         """Fetch tracking status from DPD."""
         tracking_number = tracking_number.strip()
 

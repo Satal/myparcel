@@ -105,17 +105,17 @@ class _Response:
         return SHIPMENT
 
 
-async def test_fetch_sends_configured_postcode(relay, monkeypatch):
+@pytest.mark.parametrize(("postcode", "params"), [("AB1 2CD", {"postcode": "AB1 2CD"}), (None, None)])
+async def test_fetch_sends_postcode_when_given(relay, monkeypatch, postcode, params):
     seen = {}
 
     async def fake_get(url, params=None):
         seen["params"] = params
         return _Response()
 
-    monkeypatch.setattr("myparcel.carriers.relay.tracker.settings.relay_postcode", "AB1 2CD")
     monkeypatch.setattr(relay.client, "get", fake_get)
 
-    result = await relay.fetch_status("RELABCDEFGH1")
+    result = await relay.fetch_status("RELABCDEFGH1", postcode=postcode)
 
     assert result.success
-    assert seen["params"] == {"postcode": "AB1 2CD"}
+    assert seen["params"] == params

@@ -22,7 +22,8 @@ class Settings(BaseSettings):
     data_dir: Path = base_dir / "data"
 
     # Carriers
-    relay_postcode: str | None = None  # Relay home-delivery orders 404 without it
+    # Used for parcels added without a postcode (e.g. Relay home deliveries 404 without one)
+    default_postcode: str | None = None
 
     # Tracking
     refresh_interval_minutes: int = 30

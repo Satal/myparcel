@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from myparcel.carriers.base import TrackingResult
+from myparcel.config import settings
 from myparcel.db.models import Carrier, Parcel, ParcelStatus, TrackingEvent
 from myparcel.services.carrier_loader import carrier_loader
 
@@ -36,6 +37,7 @@ class TrackerService:
         carrier_id: str | None = None,
         description: str | None = None,
         sender: str | None = None,
+        postcode: str | None = None,
     ) -> Parcel | None:
         """Add a new parcel to track.
 
@@ -71,6 +73,7 @@ class TrackerService:
             carrier_id=carrier_id,
             description=description,
             sender=sender,
+            postcode=postcode.strip().upper() if postcode and postcode.strip() else None,
         )
         self.db.add(parcel)
         await self.db.commit()
@@ -87,7 +90,9 @@ class TrackerService:
                 error=f"Carrier {parcel.carrier_id} not found",
             )
 
-        result = await carrier.fetch_status(parcel.tracking_number)
+        result = await carrier.fetch_status(
+            parcel.tracking_number, postcode=parcel.postcode or settings.default_postcode
+        )
 
         if result.success:
             parcel.status = result.status
@@ -153,10 +158,6 @@ class TrackerService:
         if not parcel:
             return False
 
-        # Delete events first
-        await self.db.execute(
-            TrackingEvent.__table__.delete().where(TrackingEvent.parcel_id == parcel_id)
-        )
-        await self.db.delete(parcel)
+        await self.db.delete(parcel)  # events cascade
         await self.db.commit()
         return True

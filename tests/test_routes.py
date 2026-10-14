@@ -57,6 +57,14 @@ async def test_dashboard_renders(client):
     assert "Relay" in response.text
 
 
+async def test_delete_parcel_removes_it(client):
+    response = await client.post("/parcel/1/delete")
+    assert response.status_code == 303
+
+    response = await client.get("/parcel/1")
+    assert response.status_code == 404
+
+
 async def test_parcel_detail_renders(client):
     response = await client.get("/parcel/1")
     assert response.status_code == 200
