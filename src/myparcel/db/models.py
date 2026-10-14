@@ -77,10 +77,10 @@ class Parcel(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    # Relationships
-    carrier: Mapped["Carrier"] = relationship(back_populates="parcels")
+    # Relationships (eager-loaded: templates read them after the async session has returned)
+    carrier: Mapped["Carrier"] = relationship(back_populates="parcels", lazy="selectin")
     events: Mapped[list["TrackingEvent"]] = relationship(
-        back_populates="parcel", order_by="desc(TrackingEvent.timestamp)"
+        back_populates="parcel", order_by="desc(TrackingEvent.timestamp)", lazy="selectin"
     )
 
 

@@ -84,6 +84,20 @@ class BaseCarrier(ABC):
         normalised = tracking_number.strip().upper()
         return any(pattern.match(normalised) for pattern, _ in self._compiled_patterns)
 
+    def match_specificity(self, tracking_number: str) -> int:
+        """Score how specifically this carrier matches a tracking number, or -1 if it doesn't.
+
+        The score is the number of literal characters in the best matching pattern, so
+        "^REL[A-Z0-9]{8,12}$" (3) outranks a catch-all like "^[A-Z0-9]{10,20}$" (0).
+        """
+        normalised = tracking_number.strip().upper()
+        scores = [
+            len(re.sub(r"\[[^\]]*\]|\{[^}]*\}|\\.|[\^$.*+?()|]", "", pattern.pattern))
+            for pattern, _ in self._compiled_patterns
+            if pattern.match(normalised)
+        ]
+        return max(scores, default=-1)
+
     def get_tracking_url(self, tracking_number: str) -> str:
         """Get the URL to track a parcel on the carrier's website."""
         return self.config.tracking_url_template.format(tracking_number=tracking_number)

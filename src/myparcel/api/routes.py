@@ -23,9 +23,9 @@ async def index(request: Request, db: AsyncSession = Depends(get_db)):
     carriers = carrier_loader.list_carriers()
 
     return templates.TemplateResponse(
+        request,
         "index.html",
         {
-            "request": request,
             "parcels": parcels,
             "carriers": carriers,
         },
@@ -49,9 +49,9 @@ async def parcel_detail(
     tracking_url = carrier.get_tracking_url(parcel.tracking_number) if carrier else None
 
     return templates.TemplateResponse(
+        request,
         "parcel_detail.html",
         {
-            "request": request,
             "parcel": parcel,
             "tracking_url": tracking_url,
         },

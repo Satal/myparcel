@@ -112,12 +112,14 @@ class CarrierLoader:
         if not self._carriers:
             self.load_all()
 
-        matches = []
-        for carrier in self._carriers.values():
-            if carrier.matches_tracking_number(tracking_number):
-                matches.append(carrier)
+        scored = [
+            (carrier.match_specificity(tracking_number), carrier)
+            for carrier in self._carriers.values()
+        ]
+        scored = [(score, carrier) for score, carrier in scored if score >= 0]
+        scored.sort(key=lambda item: item[0], reverse=True)
 
-        return matches
+        return [carrier for _, carrier in scored]
 
     def list_carriers(self) -> list[CarrierConfig]:
         """List all loaded carrier configurations."""

@@ -16,8 +16,9 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:///./data/myparcel.db"
 
     # Paths
-    base_dir: Path = Path(__file__).parent.parent.parent.parent
-    carriers_dir: Path = base_dir / "src" / "myparcel" / "carriers"
+    # Run from the project root (or /app in Docker); carriers ship inside the package
+    base_dir: Path = Path.cwd()
+    carriers_dir: Path = Path(__file__).parent / "carriers"
     data_dir: Path = base_dir / "data"
 
     # Tracking

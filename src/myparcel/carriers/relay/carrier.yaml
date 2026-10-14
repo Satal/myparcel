@@ -1,0 +1,66 @@
+# Relay Carrier Configuration
+# https://track.relaytech.co - used by Vinted and other marketplaces
+
+id: relay
+name: Relay
+website: https://relaytech.co
+tracking_url_template: "https://track.relaytech.co/orders/{tracking_number}"
+enabled: true
+
+# Tracking number patterns
+tracking_patterns:
+  # e.g. RELR2WTNJG1N
+  - regex: "^REL[A-Z0-9]{8,12}$"
+    description: "Relay tracking number (REL prefix)"
+
+# Status mapping
+# Keys match Relay's raw status codes (delivery_status) and the event display text.
+# Matching is substring-based and first match wins, so specific entries come first.
+status_mapping:
+  "lost_in_transit": "exception"
+  "rts_failed": "exception"
+  "cancelled": "exception"
+  "oversized_parcel": "exception"
+
+  "return_to_sender": "returned"
+  "returning_to_sender": "returned"
+  "rts_": "returned"
+  "collection_expired": "returned"
+  "returned": "returned"
+
+  "delivery_failed": "failed_attempt"
+  "first_time_fail": "failed_attempt"
+  "reattempting_delivery": "failed_attempt"
+  "max_attempts_exceeded": "failed_attempt"
+
+  "home_delivery_delivered": "delivered"
+  "collected_by_customer": "delivered"
+  "delivered": "delivered"
+
+  "awaiting_customer_collection": "held"
+  "ready_for_collection": "held"
+  "ready to collect": "held"
+
+  "out_for_delivery": "out_for_delivery"
+  "assigned_to_route": "out_for_delivery"
+  "courier_nearby": "out_for_delivery"
+
+  "driver_collected_parcel_from_pitstop": "in_transit"
+  "courier collected": "in_transit"
+  "sortation": "in_transit"
+  "preparing_customer_collection": "in_transit"
+  "delayed": "in_transit"
+
+  "received_at_pitstop": "received"
+  "received your parcel": "received"
+
+  "order_created": "pending"
+  "awaiting_parcel_drop_off": "pending"
+  "awaiting your": "pending"
+  "expecting your parcel": "pending"
+
+# Email patterns
+email_patterns:
+  subject_contains:
+    - "Relay"
+  tracking_regex: "REL[A-Z0-9]{8,12}"
