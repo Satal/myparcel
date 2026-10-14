@@ -148,7 +148,9 @@ class EvriCarrier(BaseCarrier):
         if description:
             full_status = f"{status_text}: {description}"
 
-        if status_text != "Unknown" or events:
+        # Any h3 matches, including the cookie banner, so only trust a heading we recognise.
+        # Evri's bot protection often stops the tracking data loading at all.
+        if events or status != ParcelStatus.UNKNOWN:
             return TrackingResult(
                 success=True,
                 status=status,
@@ -158,7 +160,7 @@ class EvriCarrier(BaseCarrier):
 
         return TrackingResult(
             success=False,
-            error="Could not extract tracking data from page",
+            error="Evri tracking data didn't load (likely its bot protection); check the Evri link",
         )
 
     def _status_from_stage(self, stage_text: str) -> ParcelStatus:
