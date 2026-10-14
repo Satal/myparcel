@@ -61,9 +61,11 @@ class DPDCarrier(BaseCarrier):
             return TrackingResult(success=False, error=f"HTTP error: {e}")
 
         try:
-            return self._parse(parcel.get("data") or {}, events.get("data") or [])
+            result = self._parse(parcel.get("data") or {}, events.get("data") or [])
         except Exception as e:
             return TrackingResult(success=False, error=f"Could not parse DPD response: {e}")
+        result.tracking_url = self.get_tracking_url(parcel_code)
+        return result
 
     async def _find_parcel_code(self, reference: str, postcode: str | None) -> str | None:
         params = {"referenceNumber": reference, "origin": "PRTK"}

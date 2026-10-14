@@ -8,13 +8,13 @@ Set these environment variables:
 - ROYAL_MAIL_CLIENT_SECRET: Your X-IBM-Client-Secret
 """
 
-import os
 import re
 from datetime import datetime, timezone
 
 import httpx
 
 from myparcel.carriers.base import BaseCarrier, CarrierConfig, TrackingResult
+from myparcel.config import settings
 
 
 class RoyalMailCarrier(BaseCarrier):
@@ -32,9 +32,9 @@ class RoyalMailCarrier(BaseCarrier):
     def __init__(self, config: CarrierConfig):
         super().__init__(config)
 
-        # Load API credentials from environment
-        self.client_id = os.getenv("ROYAL_MAIL_CLIENT_ID", "")
-        self.client_secret = os.getenv("ROYAL_MAIL_CLIENT_SECRET", "")
+        # API credentials from the environment or .env
+        self.client_id = settings.royal_mail_client_id
+        self.client_secret = settings.royal_mail_client_secret
 
         self.client = httpx.AsyncClient(
             headers={

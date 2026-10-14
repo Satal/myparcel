@@ -476,3 +476,17 @@ footer {
     color: var(--color-text-muted);
     font-size: 0.875rem;
 }
+
+.login {
+    max-width: 360px;
+    margin: 3rem auto;
+}
+
+.login-error {
+    color: var(--color-danger);
+    margin-bottom: 1rem;
+}
+
+.nav-links .inline-form {
+    margin-left: 2rem;
+}

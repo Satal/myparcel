@@ -3,7 +3,15 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from myparcel.config import settings
 from myparcel.db.models import Base
+
+
+@pytest.fixture(autouse=True)
+def no_login(monkeypatch):
+    """Run without a login unless a test turns it on, whatever .env says."""
+    monkeypatch.setattr(settings, "auth_username", None)
+    monkeypatch.setattr(settings, "auth_password", None)
 
 
 @pytest.fixture

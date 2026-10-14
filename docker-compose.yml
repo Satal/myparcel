@@ -1,54 +1,34 @@
+# MyParcel, ready for a Portainer stack (or `docker compose up -d --build`).
+#
+# Required: SECRET_KEY, AUTH_USERNAME, AUTH_PASSWORD.
+# MYPARCEL_DATA should be an absolute host path when deployed through Portainer;
+# the relative default only makes sense for a local checkout.
 services:
-  # Lightweight version - works with Royal Mail, DPD (HTTP-based tracking)
   myparcel:
+    image: ${MYPARCEL_IMAGE:-myparcel:latest}
     build:
       context: .
-      target: default
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./data:/app/data
-      - ./src/myparcel/carriers:/app/src/myparcel/carriers:ro
-    environment:
-      - DEBUG=false
-      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      target: ${MYPARCEL_TARGET:-default}
+    container_name: myparcel
     restart: unless-stopped
-
-  # Full version with Playwright - works with ALL carriers including Evri
-  myparcel-full:
-    build:
-      context: .
-      target: full
+    init: true
+    security_opt:
+      - no-new-privileges:true
     ports:
-      - "8000:8000"
-    volumes:
-      - ./data:/app/data
-      - ./src/myparcel/carriers:/app/src/myparcel/carriers:ro
+      - "${MYPARCEL_PORT:-8000}:8000"
     environment:
-      - DEBUG=false
-      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
-    # Required for Chromium to work properly in Docker
-    ipc: host
-    # Alternative: use cap_add instead of ipc: host
-    # cap_add:
-    #   - SYS_ADMIN
-    restart: unless-stopped
-    profiles:
-      - full
-
-  # Development with auto-reload (lightweight)
-  myparcel-dev:
-    build:
-      context: .
-      target: default
-    ports:
-      - "8000:8000"
+      SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY}
+      AUTH_USERNAME: ${AUTH_USERNAME:?set AUTH_USERNAME}
+      AUTH_PASSWORD: ${AUTH_PASSWORD:?set AUTH_PASSWORD}
+      DEFAULT_POSTCODE: ${DEFAULT_POSTCODE:-}
+      REFRESH_INTERVAL_MINUTES: ${REFRESH_INTERVAL_MINUTES:-30}
+      ROYAL_MAIL_CLIENT_ID: ${ROYAL_MAIL_CLIENT_ID:-}
+      ROYAL_MAIL_CLIENT_SECRET: ${ROYAL_MAIL_CLIENT_SECRET:-}
     volumes:
-      - ./src:/app/src
-      - ./static:/app/static
-      - ./data:/app/data
-    environment:
-      - DEBUG=true
-    command: uvicorn myparcel.main:app --host 0.0.0.0 --port 8000 --reload
-    profiles:
-      - dev
+      - ${MYPARCEL_DATA:-./data}:/app/data
+    # Chromium in the "full" target needs more than Docker's 64 MB /dev/shm
+    shm_size: 256m
+    deploy:
+      resources:
+        limits:
+          memory: ${MYPARCEL_MEMORY:-512m}

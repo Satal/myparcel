@@ -69,3 +69,19 @@ async def test_parcel_detail_renders(client):
     response = await client.get("/parcel/1")
     assert response.status_code == 200
     assert "Received Your Parcel" in response.text
+
+
+async def test_add_parcel_on_fresh_database(client, monkeypatch):
+    """Adding works before anyone has opened the dashboard (no carrier rows yet)."""
+    from myparcel.carriers.base import TrackingResult
+    from myparcel.services.carrier_loader import carrier_loader
+
+    carrier_loader.load_all()
+    dpd = carrier_loader.get_carrier("dpd")
+
+    async def fake_fetch(tracking_number, postcode=None):
+        return TrackingResult(success=False, error="offline")
+
+    monkeypatch.setattr(dpd, "fetch_status", fake_fetch)
+    response = await client.post("/parcel/add", data={"tracking_number": "15500000000001"})
+    assert response.status_code == 303

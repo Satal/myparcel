@@ -1,61 +1,46 @@
 # MyParcel Dockerfile
 #
 # Two build targets:
-#   - default: Lightweight, no browser automation (Royal Mail, DPD work)
-#   - full: Includes Playwright for JS-heavy sites (Evri, etc.)
+#   - default: no browser automation (Relay, DPD, Royal Mail)
+#   - full: adds Playwright + Chromium for JS-heavy sites (Evri)
 #
-# Build lightweight version:
 #   docker build -t myparcel .
-#
-# Build full version with browser support:
 #   docker build --target full -t myparcel:full .
+#
+# The container starts as root only to hand /app/data to the app user (bind
+# mounts are usually root-owned), then drops to that user.
 
-# ==============================================================================
-# Stage 1: Base image with Python dependencies
-# ==============================================================================
 FROM python:3.12-slim AS base
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python dependencies (without browser extras)
-COPY pyproject.toml .
+COPY pyproject.toml README.md ./
+COPY src/ src/
 RUN pip install --no-cache-dir .
 
-# Copy application code
-COPY src/ src/
 COPY static/ static/
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN useradd --system --uid 1000 --user-group --home-dir /app myparcel \
+    && mkdir -p data && chown myparcel:myparcel data
 
-# Create data directory
-RUN mkdir -p data
-
-# Expose port
 EXPOSE 8000
+VOLUME ["/app/data"]
 
-# ==============================================================================
-# Stage 2: Lightweight image (default) - no browser automation
-# ==============================================================================
-FROM base AS default
+HEALTHCHECK --interval=60s --timeout=5s --start-period=20s --retries=3 \
+    CMD python -c "import urllib.request,sys; sys.exit(urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4).status != 200)"
 
-# Run the application
-CMD ["uvicorn", "myparcel.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["uvicorn", "myparcel.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
 
-# ==============================================================================
-# Stage 3: Full image with Playwright for JS-heavy carriers (Evri, etc.)
-# ==============================================================================
 FROM base AS full
 
-# Install Playwright and browser dependencies
 RUN pip install --no-cache-dir playwright \
-    && playwright install chromium --with-deps
+    && playwright install chromium --with-deps \
+    && rm -rf /var/lib/apt/lists/*
 
-# Note: For Chromium to work properly, run with:
-#   docker run --ipc=host myparcel:full
-# Or:
-#   docker run --cap-add=SYS_ADMIN myparcel:full
-
-CMD ["uvicorn", "myparcel.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Last stage is what a plain `docker build` produces
+FROM base AS default

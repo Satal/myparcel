@@ -21,11 +21,17 @@ class Settings(BaseSettings):
     carriers_dir: Path = Path(__file__).parent / "carriers"
     data_dir: Path = base_dir / "data"
 
+    # Login for the web UI; leave either unset to run without one (local use only)
+    auth_username: str | None = None
+    auth_password: str | None = None
+
     # Carriers
     # Used for parcels added without a postcode (e.g. Relay home deliveries 404 without one)
     default_postcode: str | None = None
+    royal_mail_client_id: str = ""
+    royal_mail_client_secret: str = ""
 
-    # Tracking
+    # Tracking; active parcels are refreshed in the background, 0 disables it
     refresh_interval_minutes: int = 30
     max_tracking_age_days: int = 30
 

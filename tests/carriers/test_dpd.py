@@ -77,6 +77,7 @@ async def test_parcel_number_is_resolved_with_postcode(dpd, fake_api):
         {"referenceNumber": "15500000000001", "origin": "PRTK", "postcode": "AB1 2CD"},
     )
     assert fake_api[1][0] == "/parcels/15500000000001*12345"
+    assert result.tracking_url == "https://track.dpd.co.uk/parcels/15500000000001*12345"
 
 
 async def test_parse(dpd, fake_api):

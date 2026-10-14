@@ -60,7 +60,7 @@ async def test_add_parcel_normalises_postcode(db_session):
     assert parcel.postcode == "RM2 5UU"
 
 
-async def test_init_db_adds_postcode_to_existing_database(tmp_path, monkeypatch):
+async def test_init_db_adds_new_columns_to_existing_database(tmp_path, monkeypatch):
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'old.db'}")
     async with engine.begin() as conn:
         await conn.execute(
@@ -76,4 +76,4 @@ async def test_init_db_adds_postcode_to_existing_database(tmp_path, monkeypatch)
             lambda sync_conn: {c["name"] for c in inspect(sync_conn).get_columns("parcels")}
         )
     await engine.dispose()
-    assert "postcode" in columns
+    assert {"postcode", "tracking_url"} <= columns

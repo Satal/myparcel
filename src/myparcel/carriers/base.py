@@ -24,6 +24,9 @@ class TrackingResult:
     expected_delivery: datetime | None = None
     events: list[dict[str, Any]] = field(default_factory=list)
     error: str | None = None
+    # Direct link to this parcel on the carrier's site, when the carrier resolved one
+    # that the tracking number alone can't build (e.g. DPD's parcel code).
+    tracking_url: str | None = None
 
 
 @dataclass

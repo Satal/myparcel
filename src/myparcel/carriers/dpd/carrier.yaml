@@ -4,7 +4,7 @@
 id: dpd
 name: DPD
 website: https://www.dpd.co.uk
-tracking_url_template: "https://www.dpd.co.uk/tracking/trackingSearch.do?parcelCode={tracking_number}"
+tracking_url_template: "https://track.dpd.co.uk/parcels/{tracking_number}"
 enabled: true
 
 # Tracking number patterns

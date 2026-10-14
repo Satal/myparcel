@@ -21,14 +21,40 @@ Track all your parcels from Royal Mail, DPD, Evri, and more in one place.
 git clone https://github.com/satal/myparcel.git
 cd myparcel
 
-# Option 1: Lightweight (Royal Mail, DPD - no browser automation)
-docker compose up -d
+# Set the login and session key (compose refuses to start without them)
+cat > .env <<ENV
+SECRET_KEY=$(openssl rand -hex 32)
+AUTH_USERNAME=me
+AUTH_PASSWORD=choose-something
+DEFAULT_POSTCODE=AB1 2CD
+ENV
 
-# Option 2: Full version with browser support (ALL carriers including Evri)
-docker compose --profile full up -d myparcel-full
+# Lightweight image (Relay, DPD, Royal Mail)
+docker compose up -d --build
+
+# Or the full image with Chromium, for Evri
+MYPARCEL_TARGET=full MYPARCEL_MEMORY=1g docker compose up -d --build
 
 # Access at http://localhost:8000
 ```
+
+### Portainer
+
+Create a stack from this repository (compose path `docker-compose.yml`) and set
+these environment variables on the stack:
+
+| Variable | Required | Notes |
+|----------|----------|-------|
+| `SECRET_KEY` | yes | Random string; signs the login cookie |
+| `AUTH_USERNAME` / `AUTH_PASSWORD` | yes | The web UI login |
+| `MYPARCEL_DATA` | yes | Absolute host path for the SQLite database, e.g. `/volume2/docker/myparcel` |
+| `MYPARCEL_PORT` | no | Host port, default 8000 |
+| `DEFAULT_POSTCODE` | no | Used for parcels added without a postcode |
+| `MYPARCEL_TARGET` | no | `full` to include Chromium for Evri (raise `MYPARCEL_MEMORY` to `1g`) |
+| `ROYAL_MAIL_CLIENT_ID` / `ROYAL_MAIL_CLIENT_SECRET` | no | Royal Mail tracking API |
+
+Portainer builds the image from the repository on the target host. The
+container healthcheck uses `/health`, which needs no login.
 
 ### Local Development
 
@@ -57,7 +83,8 @@ uvicorn myparcel.main:app --reload
 | Carrier | Status | Requirements | Notes |
 |---------|--------|--------------|-------|
 | Royal Mail | ✅ Working | API credentials | [Get API keys](https://developer.royalmail.net/) |
-| DPD | ✅ Working | None | DPD UK |
+| DPD | ✅ Working | None | Parcel code, parcel number or consignment number |
+| Relay | ✅ Working | Postcode for home deliveries | Collect-from-shop orders need none |
 | Evri | ✅ Working | Playwright | Formerly Hermes, JS-heavy site |
 | Amazon Logistics | ⚠️ Limited | - | Requires login for full tracking |
 
@@ -94,7 +121,9 @@ cp .env.example .env
 
 Key settings:
 - `SECRET_KEY`: Change this to a random string in production
-- `REFRESH_INTERVAL_MINUTES`: How often to refresh tracking (default: 30)
+- `AUTH_USERNAME` / `AUTH_PASSWORD`: Login for the web UI; without both, there is no login
+- `DEFAULT_POSTCODE`: Used for parcels added without their own postcode
+- `REFRESH_INTERVAL_MINUTES`: How often active parcels are refreshed in the background (default: 30, 0 disables)
 
 ## Project Structure
 
@@ -130,6 +159,8 @@ Quick overview:
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/` | GET | Dashboard |
+| `/login`, `/logout` | GET/POST | Web UI login (when enabled) |
+| `/health` | GET | Liveness check, no login needed |
 | `/parcel/{id}` | GET | Parcel details |
 | `/parcel/add` | POST | Add new parcel |
 | `/parcel/{id}/refresh` | POST | Refresh tracking |

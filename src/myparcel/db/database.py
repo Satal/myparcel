@@ -27,11 +27,19 @@ async def init_db() -> None:
         await conn.run_sync(_add_missing_columns)
 
 
+# Columns added to parcels after release, with their DDL type
+_PARCEL_COLUMNS = {
+    "postcode": "VARCHAR(16)",
+    "tracking_url": "VARCHAR(512)",
+}
+
+
 def _add_missing_columns(conn) -> None:
     """Add columns introduced after a database was created (create_all skips existing tables)."""
     columns = {column["name"] for column in inspect(conn).get_columns("parcels")}
-    if "postcode" not in columns:
-        conn.execute(text("ALTER TABLE parcels ADD COLUMN postcode VARCHAR(16)"))
+    for name, ddl_type in _PARCEL_COLUMNS.items():
+        if name not in columns:
+            conn.execute(text(f"ALTER TABLE parcels ADD COLUMN {name} {ddl_type}"))
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

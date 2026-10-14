@@ -99,6 +99,8 @@ class TrackerService:
             parcel.last_status_text = result.status_text
             parcel.expected_delivery = result.expected_delivery
             parcel.last_checked = datetime.now(timezone.utc)
+            if result.tracking_url:
+                parcel.tracking_url = result.tracking_url
 
             # Mark as inactive if delivered
             if result.status == ParcelStatus.DELIVERED:

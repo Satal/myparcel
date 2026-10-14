@@ -59,6 +59,9 @@ class Parcel(Base):
     sender: Mapped[str | None] = mapped_column(String(255), nullable=True)
     postcode: Mapped[str | None] = mapped_column(String(16), nullable=True)
 
+    # Carrier-resolved link to the parcel's own tracking page
+    tracking_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+
     # Current status
     status: Mapped[ParcelStatus] = mapped_column(default=ParcelStatus.UNKNOWN)
     last_status_text: Mapped[str | None] = mapped_column(Text, nullable=True)

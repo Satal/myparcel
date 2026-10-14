@@ -2,15 +2,20 @@
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from myparcel.api.templating import templates
 from myparcel.db import get_db
 from myparcel.services.carrier_loader import carrier_loader
 from myparcel.services.tracker import TrackerService
 
 router = APIRouter()
-templates = Jinja2Templates(directory="src/myparcel/templates")
+
+
+@router.get("/health")
+async def health():
+    """Liveness check for the container healthcheck (no login needed)."""
+    return {"status": "ok"}
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -46,7 +51,9 @@ async def parcel_detail(
         raise HTTPException(status_code=404, detail="Parcel not found")
 
     carrier = carrier_loader.get_carrier(parcel.carrier_id)
-    tracking_url = carrier.get_tracking_url(parcel.tracking_number) if carrier else None
+    tracking_url = parcel.tracking_url or (
+        carrier.get_tracking_url(parcel.tracking_number) if carrier else None
+    )
 
     return templates.TemplateResponse(
         request,
@@ -69,6 +76,7 @@ async def add_parcel(
 ):
     """Add a new parcel to track."""
     tracker = TrackerService(db)
+    await tracker.ensure_carriers_exist()
 
     # If no carrier specified, try to detect it
     if not carrier_id:
