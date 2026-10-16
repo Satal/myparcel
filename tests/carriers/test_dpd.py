@@ -108,6 +108,13 @@ async def test_unknown_reference(dpd, monkeypatch):
         ("We have your parcel", ParcelStatus.RECEIVED),
         ("Your parcel is on its way", ParcelStatus.IN_TRANSIT),
         ("Out for delivery", ParcelStatus.OUT_FOR_DELIVERY),
+        (
+            "Your Atlantic Shopping order will be delivered today by Muhammad, your DPD driver, "
+            "between 14:58 and 15:58. Your one hour timeslot can't be changed",
+            ParcelStatus.OUT_FOR_DELIVERY,
+        ),
+        ("Your parcel will be with you today  between 14:58 and 15:58", ParcelStatus.OUT_FOR_DELIVERY),
+        ("Your parcel will be delivered on Monday", ParcelStatus.IN_TRANSIT),
         ("Your parcel has been delivered", ParcelStatus.DELIVERED),
     ],
 )

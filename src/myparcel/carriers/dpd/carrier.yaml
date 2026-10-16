@@ -27,6 +27,13 @@ status_mapping:
   "order details": "pending"
   "expecting your parcel": "pending"
 
+  # Forward-looking texts say "delivered" before the parcel is, so match them first
+  "will be delivered today": "out_for_delivery"
+  "will be with you today": "out_for_delivery"
+  "your dpd driver": "out_for_delivery"
+  "will be delivered": "in_transit"
+  "will be with you": "in_transit"
+
   "delivered": "delivered"
   "parcel delivered": "delivered"
   "signed for": "delivered"
