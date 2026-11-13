@@ -12,6 +12,8 @@ def no_login(monkeypatch):
     """Run without a login unless a test turns it on, whatever .env says."""
     monkeypatch.setattr(settings, "auth_username", None)
     monkeypatch.setattr(settings, "auth_password", None)
+    monkeypatch.setattr(settings, "sso_issuer", None)
+    monkeypatch.setattr(settings, "sso_client_secret", None)
 
 
 @pytest.fixture

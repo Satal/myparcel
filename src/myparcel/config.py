@@ -25,6 +25,17 @@ class Settings(BaseSettings):
     auth_username: str | None = None
     auth_password: str | None = None
 
+    # Authelia SSO (OIDC code + PKCE). On when issuer and client secret are set;
+    # /login then goes to Authelia and the password form above is only reachable
+    # at /login?local (break-glass, and only if a password is also set).
+    # sso_users: comma-separated Authelia usernames allowed in.
+    sso_issuer: str | None = None
+    sso_internal_url: str | None = None
+    sso_client_id: str = "myparcel"
+    sso_client_secret: str | None = None
+    sso_redirect_uri: str | None = None
+    sso_users: str = ""
+
     # Carriers
     # Used for parcels added without a postcode (e.g. Relay home deliveries 404 without one)
     default_postcode: str | None = None

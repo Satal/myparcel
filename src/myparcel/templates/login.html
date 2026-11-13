@@ -8,6 +8,10 @@
     {% if error %}
     <p class="login-error" role="alert">{{ error }}</p>
     {% endif %}
+    {% if sso %}
+    <p><a class="btn btn-primary" href="/auth/sso?next={{ next | urlencode }}">Sign in with Jenkins Group</a></p>
+    {% endif %}
+    {% if password %}
     <form action="/login" method="post">
         <input type="hidden" name="next" value="{{ next }}">
         <div class="form-group">
@@ -22,5 +26,6 @@
         </div>
         <button type="submit" class="btn btn-primary">Log in</button>
     </form>
+    {% endif %}
 </section>
 {% endblock %}
