@@ -85,3 +85,16 @@ async def test_add_parcel_on_fresh_database(client, monkeypatch):
     monkeypatch.setattr(dpd, "fetch_status", fake_fetch)
     response = await client.post("/parcel/add", data={"tracking_number": "15500000000001"})
     assert response.status_code == 303
+
+
+@pytest.mark.parametrize("brand", [False, True])
+async def test_favicon_links_gated_on_suite_brand(client, monkeypatch, brand):
+    from myparcel.config import settings
+
+    monkeypatch.setattr(settings, "suite_brand", brand)
+    html = (await client.get("/")).text
+    assert ('href="/static/favicon.svg" type="image/svg+xml"' in html) is brand
+    assert ('href="/static/favicon.ico"' in html) is brand
+    assert ('href="/static/apple-touch-icon.png"' in html) is brand
+    assert ('<img src="/static/favicon.svg"' in html) is brand
+    assert ("\U0001f4e6 MyParcel" in html) is (not brand)

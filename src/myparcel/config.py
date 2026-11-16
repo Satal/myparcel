@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     # Application
     app_name: str = "MyParcel"
     debug: bool = False
+    # Jenkins Group branding (app mark favicon + top bar); off for self-hosters
+    suite_brand: bool = False
     secret_key: str = "change-me-in-production"
 
     # Database

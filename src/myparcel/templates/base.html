@@ -8,13 +8,23 @@
         // Apply a saved theme before first paint so the page doesn't flash
         try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
     </script>
+    {% if settings.suite_brand %}
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/static/favicon.ico" sizes="48x48">
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+    <link rel="stylesheet" href="https://suite.jenkins.group/suite.css">
+    {% endif %}
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
     <header>
         <nav>
+            {% if settings.suite_brand %}
+            <a href="/" class="logo logo-suite"><img src="/static/favicon.svg" alt="" width="28" height="28"><span>MyParcel</span></a>
+            {% else %}
             <a href="/" class="logo">📦 MyParcel</a>
+            {% endif %}
             <div class="nav-links">
                 <a href="/">Dashboard</a>
                 <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌓</button>

@@ -87,6 +87,21 @@ nav {
     text-decoration: none;
 }
 
+.logo-suite {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--jg-font, "Hanken Grotesk", system-ui, sans-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--jg-ink, var(--color-text));
+}
+
+.logo-suite img {
+    display: block;
+    flex: none;
+}
+
 .nav-links a {
     color: var(--color-text-muted);
     text-decoration: none;
