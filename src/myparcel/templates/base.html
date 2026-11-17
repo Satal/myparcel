@@ -13,6 +13,7 @@
     <link rel="icon" href="/static/favicon.ico" sizes="48x48">
     <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
     <link rel="stylesheet" href="https://suite.jenkins.group/suite.css">
+    <script src="https://suite.jenkins.group/switcher.js" defer></script>
     {% endif %}
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -21,6 +22,7 @@
     <header>
         <nav>
             {% if settings.suite_brand %}
+            <jg-switcher align="left"></jg-switcher>
             <a href="/" class="logo logo-suite"><img src="/static/favicon.svg" alt="" width="28" height="28"><span>MyParcel</span></a>
             {% else %}
             <a href="/" class="logo">📦 MyParcel</a>

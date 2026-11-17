@@ -98,3 +98,6 @@ async def test_favicon_links_gated_on_suite_brand(client, monkeypatch, brand):
     assert ('href="/static/apple-touch-icon.png"' in html) is brand
     assert ('<img src="/static/favicon.svg"' in html) is brand
     assert ("\U0001f4e6 MyParcel" in html) is (not brand)
+    assert ("<jg-switcher" in html) is brand
+    assert ("https://suite.jenkins.group/suite.css" in html) is brand
+    assert ("https://suite.jenkins.group/switcher.js" in html) is brand

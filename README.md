@@ -123,6 +123,7 @@ Key settings:
 - `SECRET_KEY`: Change this to a random string in production
 - `AUTH_USERNAME` / `AUTH_PASSWORD`: Login for the web UI; without both, there is no login
 - `DEFAULT_POSTCODE`: Used for parcels added without their own postcode
+- `SUITE_BRAND`: Shows the Jenkins Group suite mark, favicon and app switcher (loaded from `suite.jenkins.group`) in the top bar (default: false; the internal deployment sets it to true)
 - `REFRESH_INTERVAL_MINUTES`: How often active parcels are refreshed in the background (default: 30, 0 disables)
 
 ## Project Structure
