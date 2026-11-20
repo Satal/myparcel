@@ -53,8 +53,12 @@ these environment variables on the stack:
 | `MYPARCEL_TARGET` | no | `full` to include Chromium for Evri (raise `MYPARCEL_MEMORY` to `1g`) |
 | `ROYAL_MAIL_CLIENT_ID` / `ROYAL_MAIL_CLIENT_SECRET` | no | Royal Mail tracking API |
 
-Portainer builds the image from the repository on the target host. The
-container healthcheck uses `/health`, which needs no login.
+The internal deployment does not build from the repository: Portainer can't
+reliably build on the NAS. Build `--target default`, push
+`registry.jenkins.group/myparcel:latest`, then
+`dadops portainer redeploy myparcel --pull-image`. The stack is
+`docker-stacks/myparcel`. The container healthcheck uses `/health`, which
+needs no login.
 
 ### Local Development
 
