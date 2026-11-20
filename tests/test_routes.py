@@ -101,3 +101,11 @@ async def test_favicon_links_gated_on_suite_brand(client, monkeypatch, brand):
     assert ("<jg-switcher" in html) is brand
     assert ("https://suite.jenkins.group/suite.css" in html) is brand
     assert ("https://suite.jenkins.group/switcher.js" in html) is brand
+
+
+async def test_pages_are_dark_mode_only(client):
+    for path in ("/", "/parcel/1"):
+        text = (await client.get(path)).text
+        assert '<html lang="en" class="dark" style="color-scheme: dark">' in text
+        assert "theme-toggle" not in text
+        assert "prefers-color-scheme" not in text

@@ -1,13 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark" style="color-scheme: dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MyParcel{% endblock %}</title>
-    <script>
-        // Apply a saved theme before first paint so the page doesn't flash
-        try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
-    </script>
     {% if settings.suite_brand %}
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
     <link rel="icon" href="/static/favicon.ico" sizes="48x48">
@@ -29,7 +25,6 @@
             {% endif %}
             <div class="nav-links">
                 <a href="/">Dashboard</a>
-                <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌓</button>
                 {% if request.session.get("user") %}
                 <form action="/logout" method="post" class="inline-form">
                     <button type="submit" class="btn btn-small btn-secondary">Log out</button>
@@ -46,15 +41,5 @@
     <footer>
         <p>MyParcel - Self-hosted parcel tracking</p>
     </footer>
-    <script>
-        document.getElementById("theme-toggle").addEventListener("click", function () {
-            var root = document.documentElement;
-            var dark = root.dataset.theme
-                ? root.dataset.theme === "dark"
-                : window.matchMedia("(prefers-color-scheme: dark)").matches;
-            root.dataset.theme = dark ? "light" : "dark";
-            try { localStorage.setItem("theme", root.dataset.theme); } catch (e) {}
-        });
-    </script>
 </body>
 </html>
